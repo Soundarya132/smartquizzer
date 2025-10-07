@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz History</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .card {
+            background: #ffffff;
+            padding: 35px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            margin: 0 auto;
+            max-width: 1000px;
+            transition: all 0.3s ease;
+            animation: slideUp 0.6s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 50px rgba(0,0,0,0.2);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card h2 {
+            font-size: 2rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 30px;
+            text-align: center;
+            font-weight: 700;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        .card h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 2px;
+        }
+
+        .quiz-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 1rem;
+            overflow: hidden;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        .quiz-table thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+        }
+
+        .quiz-table th {
+            padding: 18px 20px;
+            text-align: left;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.9rem;
+        }
+
+        .quiz-table td {
+            padding: 16px 20px;
+            border-bottom: 1px solid #f0f0f0;
+            color: #2c3e50;
+            font-size: 0.95rem;
+        }
+
+        .quiz-table tbody tr {
+            background: #ffffff;
+            transition: all 0.3s ease;
+        }
+
+        .quiz-table tbody tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .quiz-table tbody tr:hover {
+            background: linear-gradient(90deg, #eef2ff 0%, #f3e7ff 100%);
+            transform: scale(1.01);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+        }
+
+        .quiz-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .score-badge {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .score-excellent {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+        }
+
+        .score-good {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .score-average {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            color: white;
+        }
+
+        .score-low {
+            background: linear-gradient(135deg, #ff6b6b 0%, #feca57 100%);
+            color: white;
+        }
+
+        .quiz-count {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 12px;
+            background: #f0f4ff;
+            border-radius: 15px;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .quiz-count::before {
+            content: '📝';
+            font-size: 1.1em;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #718096;
+        }
+
+        .empty-state-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            color: #4a5568;
+            margin-bottom: 10px;
+        }
+
+        .empty-state p {
+            font-size: 1.1rem;
+            color: #718096;
+        }
+
+        @media (max-width: 768px) {
+            .card {
+                padding: 25px 15px;
+            }
+
+            .card h2 {
+                font-size: 1.5rem;
+            }
+
+            .quiz-table {
+                font-size: 0.9rem;
+            }
+
+            .quiz-table th,
+            .quiz-table td {
+                padding: 12px 10px;
+            }
+
+            .quiz-table th {
+                font-size: 0.8rem;
+            }
+
+            /* Stack table on mobile */
+            .quiz-table thead {
+                display: none;
+            }
+
+            .quiz-table tbody tr {
+                display: block;
+                margin-bottom: 15px;
+                border-radius: 10px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            }
+
+            .quiz-table td {
+                display: flex;
+                justify-content: space-between;
+                padding: 10px 15px;
+                border-bottom: 1px solid #f0f0f0;
+            }
+
+            .quiz-table td:last-child {
+                border-bottom: none;
+            }
+
+            .quiz-table td::before {
+                content: attr(data-label);
+                font-weight: 600;
+                color: #667eea;
+                margin-right: 10px;
+            }
+        }
+        .nav-links { display: flex; gap: 30px; align-items: center; }
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 12px 25px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .nav-links a:before {
+            content: '';
+            position: absolute; top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        .nav-links a:hover:before { left: 100%; }
+        .nav-links a:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+  <div class="nav-links">
+                <a href="{% url 'userdashboard' %}">Back</a>
+             </div>
+    <div class="card">
+        <h2>📊 Your Quiz History</h2>
+        {% if quiz_summary %}
+        <table class="quiz-table">
+            <thead>
+                <tr>
+                    <th>Topic</th>
+                    <th>Subtopic</th>
+                    <th>Quizzes Taken</th>
+                    <th>Average Score</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in quiz_summary %}
+                <tr>
+                    <td data-label="Topic">{{ row.topic }}</td>
+                    <td data-label="Subtopic">{{ row.subtopic }}</td>
+                    <td data-label="Quizzes Taken">
+                        <span class="quiz-count">{{ row.quizzes_taken }}</span>
+                    </td>
+                    <td data-label="Average Score">
+                        <span class="score-badge {% if row.avg_score >= 80 %}score-excellent{% elif row.avg_score >= 60 %}score-good{% elif row.avg_score >= 40 %}score-average{% else %}score-low{% endif %}">
+                            {{ row.avg_score|floatformat:1 }}%
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">📚</div>
+            <h3>No Quiz History Yet</h3>
+            <p>Start taking quizzes to see your progress here!</p>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

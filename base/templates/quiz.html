@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartQuizzer - Quiz</title>
+    <style>
+        /* Reset & Base */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #fa709a, #fee140);
+            min-height: 100vh;
+            overflow-x: hidden;
+            transition: all 0.5s ease;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 30px;
+        }
+
+        /* Animated Background Particles */
+        .particles {
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: -1;
+            opacity: 0.1;
+        }
+        .particle {
+            position: absolute;
+            width: 4px; height: 4px;
+            background: rgb(224, 206, 206);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        /* Header */
+        header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 20px 0;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 100;
+        }
+        nav {
+            max-width: 1200px; margin: 0 auto;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 20px;
+        }
+        .logo {
+            font-size: 32px; font-weight: bold;
+            cursor: pointer; color: #fff;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        /* Main Content */
+        .quiz-container {
+            margin-top: 120px;
+            width: 90%;
+            max-width: 800px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.3rem;
+            margin-bottom: 25px;
+            text-shadow: 0 2px 15px rgba(0,0,0,0.3);
+            animation: slideInDown 0.8s ease-out;
+        }
+
+        /* Form Styling */
+        form {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            animation: slideInUp 0.8s ease-out;
+        }
+
+        /* Question Container */
+        div {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        div:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255,255,255,0.15);
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        /* Question Text */
+        p {
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            color: white;
+        }
+
+        /* Option Labels */
+        label {
+            display: block;
+            margin: 10px 0;
+            padding: 12px 15px;
+            border-radius: 12px;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        label:before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        label:hover:before { left: 100%; }
+
+        label:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(8px);
+            border-color: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        /* Radio Button Styling */
+        input[type="radio"] {
+            margin-right: 12px;
+            transform: scale(1.2);
+            accent-color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* Submit Button */
+        button {
+            display: block;
+            margin: 30px auto 0;
+            padding: 15px 35px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            background: linear-gradient(45deg, #fff, rgba(255,255,255,0.9));
+            color: #333;
+            transition: all 0.4s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        button:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 12px 30px rgba(255,255,255,0.2);
+            background: linear-gradient(45deg, rgba(255,255,255,0.9), #fff);
+        }
+
+        button:active {
+            transform: translateY(-1px) scale(1.02);
+        }
+
+        /* HR Styling */
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            margin: 25px 0;
+            border-radius: 1px;
+        }
+
+        /* Theme Selector */
+        .theme-selector {
+            position: fixed; top: 50%; right: 30px;
+            transform: translateY(-50%);
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 25px;
+            padding: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .theme-btn {
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            margin: 5px 0; cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .theme-btn:hover { transform: scale(1.1); border-color: white; }
+        .theme-home-btn { background: linear-gradient(135deg, #667eea, #764ba2); }
+        .theme-login-btn { background: linear-gradient(135deg, #ff6b6b, #ee5a24); }
+        .theme-signup-btn { background: linear-gradient(135deg, #48c6ef, #6f86d6); }
+        .theme-creative-btn { background: linear-gradient(135deg, #fa709a, #fee140); }
+
+        /* Quiz Progress Indicator */
+        .progress-container {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #fff, rgba(255,255,255,0.8));
+            border-radius: 2px;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 10px rgba(255,255,255,0.3);
+        }
+
+        /* Animations */
+        @keyframes slideInDown {
+            from { opacity: 0; transform: translateY(-100px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideInUp {
+            from { opacity: 0; transform: translateY(100px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .quiz-container { margin-top: 100px; }
+            h1 { font-size: 2rem; }
+            form { padding: 20px; }
+            div { padding: 15px; }
+            p { font-size: 1.1rem; }
+            label { padding: 10px 12px; }
+            .theme-selector { right: 15px; }
+            .logo { font-size: 24px; }
+        }
+        @media (max-width: 480px) {
+            .quiz-container { width: 95%; margin-top: 90px; }
+            form { padding: 15px; }
+            h1 { font-size: 1.8rem; }
+            p { font-size: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="particles"></div>
+
+    <!-- Color Theme Selector -->
+    <div class="theme-selector">
+        <div class="theme-btn theme-home-btn" onclick="changeTheme('home')" title="Home Theme"></div>
+        <div class="theme-btn theme-login-btn" onclick="changeTheme('login')" title="Login Theme"></div>
+        <div class="theme-btn theme-signup-btn" onclick="changeTheme('signup')" title="Signup Theme"></div>
+        <div class="theme-btn theme-creative-btn" onclick="changeTheme('creative')" title="Creative Theme"></div>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <nav>
+            <div class="logo">SmartQuizzer</div>
+        </nav>
+    </header>
+
+    <!-- Quiz Container -->
+    <div class="quiz-container">
+        <form method="post" action="{% url 'submit_quiz' %}">
+            <h1>Quiz - {{ num_questions }} Questions</h1>
+            
+            <!-- Progress Bar -->
+            <div class="progress-container">
+                <div class="progress-bar" style="width: 0%"></div>
+            </div>
+
+            {% csrf_token %}
+            {% for question in questions %}
+                <div class="question-item" data-question="{{ forloop.counter }}">
+                    <p><strong>Q{{ forloop.counter }}. {{ question.question }}</strong></p>
+                    <label>
+                        <input type="radio" name="question_{{ question.id }}" value="1" required onchange="updateProgress()">
+                        {{ question.option1 }}
+                    </label>
+                    <label>
+                        <input type="radio" name="question_{{ question.id }}" value="2" required onchange="updateProgress()">
+                        {{ question.option2 }}
+                    </label>
+                    <label>
+                        <input type="radio" name="question_{{ question.id }}" value="3" required onchange="updateProgress()">
+                        {{ question.option3 }}
+                    </label>
+                    <label>
+                        <input type="radio" name="question_{{ question.id }}" value="4" required onchange="updateProgress()">
+                        {{ question.option4 }}
+                    </label>
+                </div>
+                <hr>
+            {% endfor %}
+
+            <button type="submit">Submit Quiz</button>
+        </form>
+    </div>
+
+    <script>
+        // Create floating particles
+        function createParticles() {
+            const particlesContainer = document.querySelector('.particles');
+            const particleCount = 50;
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        function changeTheme(theme) {
+            const themes = {
+                home: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                login: 'linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%)',
+                signup: 'linear-gradient(135deg, #48c6ef 0%, #6f86d6 100%)',
+                creative: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)'
+            };
+            document.body.style.background = themes[theme];
+            document.querySelector('.particles').innerHTML = '';
+            createParticles();
+        }
+
+        // Progress tracking
+        function updateProgress() {
+            const totalQuestions = document.querySelectorAll('.question-item').length;
+            const answeredQuestions = document.querySelectorAll('input[type="radio"]:checked').length;
+            const progress = (answeredQuestions / totalQuestions) * 100;
+            document.querySelector('.progress-bar').style.width = progress + '%';
+        }
+
+        // Initialize particles
+        createParticles();
+    </script>
+</body>
+</html>

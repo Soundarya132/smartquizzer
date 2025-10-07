@@ -1,0 +1,470 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartQuizzer - Admin Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #fa709a, #fee140);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Animated background particles */
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            opacity: 0.1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: white;
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        /* Main Container */
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            padding: 50px 40px;
+            width: 450px;
+            max-width: 90vw;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+            z-index: 10;
+            position: relative;
+            animation: slideInUp 0.8s ease-out;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .admin-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #fff, rgba(255, 255, 255, 0.8));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            font-size: 35px;
+        }
+
+        h2 {
+            color: white;
+            font-size: 2.2rem;
+            font-weight: 600;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1rem;
+            font-weight: 400;
+        }
+
+        /* Form Styling */
+        form {
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 18px;
+            z-index: 2;
+        }
+
+        input {
+            width: 100%;
+            padding: 18px 20px 18px 55px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        input:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Button Styling */
+        button {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #fff, rgba(255, 255, 255, 0.9));
+            color: #333;
+            border: none;
+            border-radius: 15px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        button:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        button:hover:before {
+            left: 100%;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(255, 255, 255, 0.2);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), #fff);
+        }
+
+        button:active {
+            transform: translateY(-1px);
+        }
+
+        /* Error Message */
+        .error {
+            background: rgba(255, 107, 107, 0.2);
+            border: 1px solid rgba(255, 107, 107, 0.4);
+            color: #ffcccc;
+            text-align: center;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        /* Color Theme Selector */
+        .theme-selector {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            gap: 8px;
+        }
+
+        .theme-btn {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .theme-btn:hover {
+            transform: scale(1.1);
+            border-color: white;
+        }
+
+        .theme-home-btn { background: linear-gradient(135deg, #667eea, #764ba2); }
+        .theme-login-btn { background: linear-gradient(135deg, #ff6b6b, #ee5a24); }
+        .theme-signup-btn { background: linear-gradient(135deg, #48c6ef, #6f86d6); }
+        .theme-creative-btn { background: linear-gradient(135deg, #fa709a, #fee140); }
+
+        /* Branding */
+        .brand {
+            position: fixed;
+            top: 30px;
+            left: 30px;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+        }
+
+        /* Animations */
+        @keyframes slideInUp {
+            from { opacity: 0; transform: translateY(100px) scale(0.8); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* Loading state for button */
+        button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #333;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 40px 30px;
+                width: 95vw;
+            }
+
+            h2 {
+                font-size: 1.8rem;
+            }
+
+            .admin-icon {
+                width: 70px;
+                height: 70px;
+                font-size: 30px;
+            }
+
+            .theme-selector {
+                top: 20px;
+                right: 20px;
+                padding: 8px;
+                gap: 6px;
+            }
+
+            .theme-btn {
+                width: 30px;
+                height: 30px;
+            }
+
+            .brand {
+                top: 20px;
+                left: 20px;
+                font-size: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            h2 {
+                font-size: 1.6rem;
+            }
+
+            input, button {
+                padding: 15px;
+                font-size: 16px;
+            }
+
+            input {
+                padding-left: 50px;
+            }
+        }
+
+        /* Focus visible for accessibility */
+        button:focus-visible,
+        input:focus-visible {
+            outline: 2px solid rgba(255, 255, 255, 0.8);
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Brand -->
+    <div class="brand">SmartQuizzer</div>
+
+    <!-- Animated Background -->
+    <div class="particles"></div>
+
+    <!-- Color Theme Selector -->
+    <div class="theme-selector">
+        <div class="theme-btn theme-home-btn" onclick="changeTheme('home')" title="Home Theme"></div>
+        <div class="theme-btn theme-login-btn" onclick="changeTheme('login')" title="Login Theme"></div>
+        <div class="theme-btn theme-signup-btn" onclick="changeTheme('signup')" title="Signup Theme"></div>
+        <div class="theme-btn theme-creative-btn" onclick="changeTheme('creative')" title="Creative Theme"></div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <div class="header">
+            <div class="admin-icon">🔐</div>
+            <h2>Admin Access</h2>
+            <p class="subtitle">Secure administrative portal</p>
+        </div>
+
+        <form method="POST" id="adminForm">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <div class="input-icon">👤</div>
+                <input 
+                    type="text" 
+                    name="username" 
+                    placeholder="Admin Username" 
+                    required 
+                    autocomplete="username"
+                >
+            </div>
+
+            <div class="form-group">
+                <div class="input-icon">🔒</div>
+                <input 
+                    type="password" 
+                    name="password" 
+                    placeholder="Password" 
+                    required 
+                    autocomplete="current-password"
+                >
+            </div>
+
+            <button type="submit" id="loginBtn">
+                <span class="btn-text">Secure Login</span>
+            </button>
+        </form>
+
+        {% if error %}
+            <div class="error">{{ error }}</div>
+        {% endif %}
+    </div>
+
+    <script>
+        // Create floating particles
+        function createParticles() {
+            const particlesContainer = document.querySelector('.particles');
+            const particleCount = 40;
+            particlesContainer.innerHTML = '';
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // Change theme
+        function changeTheme(theme) {
+            const themes = {
+                home: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                login: 'linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%)',
+                signup: 'linear-gradient(135deg, #48c6ef 0%, #6f86d6 100%)',
+                creative: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)'
+            };
+            
+            if (themes[theme]) {
+                document.body.style.background = themes[theme];
+                createParticles();
+            }
+        }
+
+        // Form submission with loading state
+        document.getElementById('adminForm').addEventListener('submit', function(e) {
+            const btn = document.getElementById('loginBtn');
+            const btnText = btn.querySelector('.btn-text');
+            
+            btn.disabled = true;
+            btnText.innerHTML = '<span class="loading"></span>Authenticating...';
+            
+            // Re-enable button after 3 seconds if form doesn't submit
+            setTimeout(() => {
+                btn.disabled = false;
+                btnText.textContent = 'Secure Login';
+            }, 3000);
+        });
+
+        // Initialize particles
+        createParticles();
+
+        // Add some interactivity to inputs
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputs = document.querySelectorAll('input');
+            
+            inputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.parentElement.style.transform = 'scale(1.02)';
+                });
+                
+                input.addEventListener('blur', function() {
+                    this.parentElement.style.transform = 'scale(1)';
+                });
+            });
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            createParticles();
+        });
+    </script>
+</body>
+</html>

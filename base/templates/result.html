@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartQuizzer - Quiz Result</title>
+    <style>
+        /* Reset & Base */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #fa709a, #fee140);
+            min-height: 100vh;
+            overflow-x: hidden;
+            transition: all 0.5s ease;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* Animated Background Particles */
+        .particles {
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: -1;
+            opacity: 0.1;
+        }
+        .particle {
+            position: absolute;
+            width: 4px; height: 4px;
+            background: white;
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        /* Header */
+        header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 20px 0;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 100;
+        }
+        nav {
+            max-width: 1200px; margin: 0 auto;
+            display: flex; justify-content: center; align-items: center;
+            padding: 0 20px;
+        }
+        .logo {
+            font-size: 32px; font-weight: bold;
+            cursor: pointer; color: #fff;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        /* Main Container */
+        .result-container {
+            margin-top: 120px;
+            width: 90%;
+            max-width: 600px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            text-shadow: 0 2px 15px rgba(0,0,0,0.3);
+            animation: slideInDown 0.8s ease-out;
+        }
+
+        /* Result Box */
+        .result-box {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 40px;
+            border-radius: 25px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            text-align: center;
+            animation: slideInUp 0.8s ease-out;
+        }
+
+        /* Result Items */
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 15px;
+            animation: fadeInLeft 0.8s ease-out;
+        }
+        .result-item:last-of-type {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .result-label {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        .result-value {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: white;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+
+        /* Score Display */
+        .score-container {
+            margin: 30px 0;
+            padding: 25px;
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+            animation: scoreReveal 1.2s ease-out 0.5s both;
+        }
+        .score-container::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(45deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+            z-index: -1;
+        }
+
+        .score-text {
+            font-size: 2.5rem;
+            font-weight: bold;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            margin-bottom: 10px;
+        }
+        .score-message {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+
+        /* Dynamic Score Colors */
+        .high-score { 
+            background: linear-gradient(135deg, rgba(46, 204, 113, 0.2), rgba(39, 174, 96, 0.1));
+            color: #2ecc71;
+        }
+        .medium-score { 
+            background: linear-gradient(135deg, rgba(243, 156, 18, 0.2), rgba(230, 126, 34, 0.1));
+            color: #f39c12;
+        }
+        .low-score { 
+            background: linear-gradient(135deg, rgba(231, 76, 60, 0.2), rgba(192, 57, 43, 0.1));
+            color: #e74c3c;
+        }
+
+        /* Button */
+        .back-button {
+            width: 100%;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            background: linear-gradient(45deg, #fff, rgba(255,255,255,0.9));
+            color: #333;
+            transition: all 0.4s ease;
+            margin-top: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .back-button:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 12px 30px rgba(255,255,255,0.2);
+            background: linear-gradient(45deg, rgba(255,255,255,0.9), #fff);
+        }
+        .back-button:active {
+            transform: translateY(-1px) scale(1.01);
+        }
+
+        /* Theme Selector */
+        .theme-selector {
+            position: fixed; top: 50%; right: 30px;
+            transform: translateY(-50%);
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 25px;
+            padding: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .theme-btn {
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            margin: 5px 0; cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .theme-btn:hover { transform: scale(1.1); border-color: white; }
+        .theme-home-btn { background: linear-gradient(135deg, #667eea, #764ba2); }
+        .theme-login-btn { background: linear-gradient(135deg, #ff6b6b, #ee5a24); }
+        .theme-signup-btn { background: linear-gradient(135deg, #48c6ef, #6f86d6); }
+        .theme-creative-btn { background: linear-gradient(135deg, #fa709a, #fee140); }
+
+        /* Celebration Animation for High Scores */
+        .celebration {
+            position: absolute;
+            width: 10px; height: 10px;
+            background: #ffd700;
+            border-radius: 50%;
+            animation: celebrate 2s ease-out infinite;
+            pointer-events: none;
+        }
+        @keyframes celebrate {
+            0% { transform: translateY(0) scale(0); opacity: 1; }
+            100% { transform: translateY(-100px) scale(1); opacity: 0; }
+        }
+
+        /* Animations */
+        @keyframes slideInDown {
+            from { opacity: 0; transform: translateY(-100px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideInUp {
+            from { opacity: 0; transform: translateY(100px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInLeft {
+            from { opacity: 0; transform: translateX(-50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes scoreReveal {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .result-container { margin-top: 100px; }
+            h1 { font-size: 2rem; }
+            .result-box { padding: 25px; }
+            .score-text { font-size: 2rem; }
+            .theme-selector { right: 15px; }
+        }
+        @media (max-width: 480px) {
+            .result-container { width: 95%; margin-top: 90px; }
+            .result-box { padding: 20px; }
+            h1 { font-size: 1.8rem; }
+            .result-item { flex-direction: column; text-align: center; gap: 10px; }
+            .score-text { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="particles"></div>
+
+    <!-- Color Theme Selector -->
+    <div class="theme-selector">
+        <div class="theme-btn theme-home-btn" onclick="changeTheme('home')" title="Home Theme"></div>
+        <div class="theme-btn theme-login-btn" onclick="changeTheme('login')" title="Login Theme"></div>
+        <div class="theme-btn theme-signup-btn" onclick="changeTheme('signup')" title="Signup Theme"></div>
+        <div class="theme-btn theme-creative-btn" onclick="changeTheme('creative')" title="Creative Theme"></div>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <nav>
+            <div class="logo">SmartQuizzer</div>
+        </nav>
+    </header>
+
+    <!-- Result Container -->
+    <div class="result-container">
+        <h1>Quiz Results</h1>
+        <div class="result-box">
+            <div class="result-item">
+                <span class="result-label">Total Questions:</span>
+                <span class="result-value">{{ total }}</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">Correct Answers:</span>
+                <span class="result-value">{{ correct }}</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">Wrong Answers:</span>
+                <span class="result-value">{{ wrong }}</span>
+            </div>
+
+            <!-- Score Display with Dynamic Styling -->
+            <div class="score-container {% if score >= 75 %}high-score{% elif score >= 50 %}medium-score{% else %}low-score{% endif %}">
+                <div class="score-text">{{ score }}%</div>
+                <div class="score-message">
+                    {% if score >= 90 %}
+                        Outstanding Performance! 🏆
+                    {% elif score >= 75 %}
+                        Great Job! Well Done! 🎉
+                    {% elif score >= 50 %}
+                        Good Work! Keep Improving! 👍
+                    {% else %}
+                        Don't Give Up! Practice More! 💪
+                    {% endif %}
+                </div>
+            </div>
+
+            <form method="GET" action="{% url 'userdashboard' %}">
+                <button type="submit" class="back-button">Back to Dashboard</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Create floating particles
+        function createParticles() {
+            const particlesContainer = document.querySelector('.particles');
+            const particleCount = 50;
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        function changeTheme(theme) {
+            const themes = {
+                home: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                login: 'linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%)',
+                signup: 'linear-gradient(135deg, #48c6ef 0%, #6f86d6 100%)',
+                creative: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)'
+            };
+            document.body.style.background = themes[theme];
+            document.querySelector('.particles').innerHTML = '';
+            createParticles();
+        }
+
+        // Celebration effect for high scores
+        function createCelebration() {
+            const score = parseFloat(document.querySelector('.score-text').textContent);
+            if (score >= 90) {
+                const container = document.querySelector('.result-box');
+                for (let i = 0; i < 20; i++) {
+                    setTimeout(() => {
+                        const celebration = document.createElement('div');
+                        celebration.className = 'celebration';
+                        celebration.style.left = Math.random() * 100 + '%';
+                        celebration.style.top = Math.random() * 100 + '%';
+                        celebration.style.background = ['#ffd700', '#ff69b4', '#00bfff', '#32cd32'][Math.floor(Math.random() * 4)];
+                        container.appendChild(celebration);
+                        
+                        setTimeout(() => {
+                            celebration.remove();
+                        }, 2000);
+                    }, i * 100);
+                }
+            }
+        }
+
+        // Initialize
+        createParticles();
+        setTimeout(createCelebration, 1000);
+    </script>
+</body>
+</html>

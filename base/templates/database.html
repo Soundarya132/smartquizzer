@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Success</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #1abc9c, #138d75);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      color: white;
+    }
+
+    .success-box {
+      background: rgba(255, 255, 255, 0.15);
+      padding: 40px;
+      border-radius: 14px;
+      text-align: center;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.25);
+      animation: popIn 0.6s ease-in-out;
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0.9); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .success-box h2 {
+      font-size: 28px;
+      margin-bottom: 20px;
+      color: #ffffff;
+      letter-spacing: 1px;
+    }
+
+    .success-box a {
+      display: inline-block;
+      margin-top: 15px;
+      padding: 12px 26px;
+      background-color: #ffffff;
+      color: #138d75;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: bold;
+      transition: all 0.3s ease;
+    }
+
+    .success-box a:hover {
+      background-color: #f2f2f2;
+      color: #0e6e5a;
+    }
+  </style>
+</head>
+<body>
+  <div class="success-box">
+    <h2>Data Stored Successfully!...</h2>
+    <a href="{% url 'admindashboard' %}">AdminDashboard</a>
+  </div>
+</body>
+</html>
