@@ -74,14 +74,14 @@ python -m venv venv
 source venv/bin/activate  # or venv\Scripts\activate on Windows
 
 3. **Install dependencies**
-   pip install -r requirements.txt
+pip install -r requirements.txt
    
 4.**Run migrations**
-   python manage.py makemigrations
+python manage.py makemigrations
 python manage.py migrate
 
 5.**Start the server**
-   python manage.py runserver
+python manage.py runserver
 
 6.**Access the app**
 Open http://127.0.0.1:8000/ in your browser.
